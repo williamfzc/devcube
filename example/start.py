@@ -1,7 +1,9 @@
 from devcube.executor import Executor
-from devcube.container import Container
 
 
-container = Container("haha", "python:3-slim", "/bin/bash", "/usr/src/app")
-executor = Executor(container)
-executor.execute()
+data = {
+    "global": {"name": "hello", "image": "python:3-slim",},
+    "before": {"command_list": ["ls",]},
+}
+
+Executor(data).execute()

@@ -1,17 +1,18 @@
 import subprocess
 import pathlib
 
-from devcube.container import Container
 from devcube.utils import logout
+from devcube.parser import Parser
 
 
 class Executor(object):
-    def __init__(self, container: Container):
+    def __init__(self, cfg_data: dict):
         self.docker_bin = "docker"
         self.user_workspace = pathlib.Path(".").absolute().as_posix()
-        self.container = container
         # check docker runtime
         self.check_env()
+        # parse
+        self.cfg = Parser.parse(cfg_data)
 
     def check_env(self):
         subprocess.check_call(
@@ -27,13 +28,13 @@ class Executor(object):
             "-i",
             # workspace
             "-v",
-            f"{self.user_workspace}:{self.container.work_dir}",
+            f"{self.user_workspace}:{self.cfg[Parser.KEY_GLOBAL].work_dir}",
             "-w",
-            self.container.work_dir,
+            self.cfg[Parser.KEY_GLOBAL].work_dir,
             # image
-            self.container.image,
+            self.cfg[Parser.KEY_GLOBAL].image,
             # interface
-            self.container.entry_point,
+            self.cfg[Parser.KEY_GLOBAL].entry_point,
         ]
         logout(f"ready to start env: {command}")
         process = subprocess.Popen(command, stdin=subprocess.PIPE)
