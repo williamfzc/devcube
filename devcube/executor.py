@@ -26,6 +26,8 @@ class Executor(object):
             self.docker_bin,
             "run",
             "-i",
+            # remove after usage
+            "--rm",
             # workspace
             "-v",
             f"{self.user_workspace}:{self.cfg[Parser.KEY_GLOBAL].work_dir}",
