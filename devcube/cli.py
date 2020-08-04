@@ -3,6 +3,7 @@ import json
 import pathlib
 
 from devcube.executor import Executor
+from devcube.parser import Parser
 
 
 DEFAULT_CFG_NAME = ".devcube"
@@ -16,7 +17,8 @@ class Cli(object):
         assert cfg_file.is_file(), f"file {file_path} not existed"
         with open(cfg_file, encoding="utf-8") as f:
             cfg = json.load(f)
-        Executor(cfg).execute()
+        parsed = Parser().parse(cfg)
+        Executor(parsed).execute()
 
 
 def main():
