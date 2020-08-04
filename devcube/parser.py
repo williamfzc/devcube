@@ -2,13 +2,13 @@ from pydantic import BaseModel
 
 
 class GlobalConfig(BaseModel):
-    pass
+    working_dir: str = "."
 
 
 class EnvConfig(BaseModel):
     name: str
     image: str
-    work_dir: str = "/devcube"
+    container_working_dir: str = "/devcube"
     entry_point: str = "/bin/bash"
 
 
@@ -19,7 +19,7 @@ available_config = {
 
 
 class ParsedConfig(BaseModel):
-    global_config: GlobalConfig = None
+    global_config: GlobalConfig = GlobalConfig()
     env: EnvConfig
 
 

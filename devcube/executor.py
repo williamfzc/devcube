@@ -1,5 +1,6 @@
-import subprocess
 import pathlib
+import docker
+import dockerpty
 
 from devcube.utils import logout
 from devcube.parser import ParsedConfig
@@ -7,46 +8,36 @@ from devcube.parser import ParsedConfig
 
 class Executor(object):
     def __init__(self, cfg: ParsedConfig):
-        self.docker_bin = "docker"
-        self.user_workspace = pathlib.Path(".").absolute().as_posix()
+        self.cfg = cfg
+        self.docker_cli = docker.from_env()
         # check docker runtime
         self.check_env()
-        self.cfg = cfg
 
     def check_env(self):
-        subprocess.check_call([self.docker_bin, "version"])
-        logout("docker runtime ready.")
+        info = self.docker_cli.info()
+        logout(f"docker runtime ready: {info}")
 
     def execute(self):
-        # todo: use official python-sdk instead?
-        command = [
-            self.docker_bin,
-            "run",
-            "-i",
-            # remove after usage
-            "--rm",
-            # workspace
-            "-v",
-            f"{self.user_workspace}:{self.cfg.env.work_dir}",
-            "-w",
-            self.cfg.env.work_dir,
-            # image
-            self.cfg.env.image,
-            # interface
-            self.cfg.env.entry_point,
-        ]
-        logout(f"ready to start env: {command}")
-        process = subprocess.Popen(command, stdin=subprocess.PIPE)
-        stop_word = "devcube::exit"
-        logout(f"Container up. Type `{stop_word}` to exit. Enjoy it :)")
+        # prepare
+        container_working_dir = (
+            pathlib.Path(self.cfg.env.container_working_dir).absolute().as_posix()
+        )
+        working_dir = (
+            pathlib.Path(self.cfg.global_config.working_dir).absolute().as_posix()
+        )
 
-        # todo
-        while True:
-            user_input = input()
-            if stop_word in user_input:
-                break
-            user_input += "\n"
-            process.stdin.write(user_input.encode())
-            process.stdin.flush()
-        logout(f"normally stop.")
-        process.kill()
+        container = self.docker_cli.containers.create(
+            image=self.cfg.env.image,
+            command=self.cfg.env.entry_point,
+            working_dir=container_working_dir,
+            volumes={working_dir: {"bind": container_working_dir, "mode": "rw"}},
+            auto_remove=True,
+            # required
+            tty=True,
+            stdin_open=True,
+        )
+
+        dockerpty.start(self.docker_cli.api, container.id)
+        # end, stop it
+        self.docker_cli.api.stop(container.name)
+        logout("devcube end.")

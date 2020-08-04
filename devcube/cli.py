@@ -6,7 +6,7 @@ from devcube.executor import Executor
 from devcube.parser import Parser
 
 
-DEFAULT_CFG_NAME = ".devcube"
+DEFAULT_CFG_NAME = ".devcube.json"
 
 
 class Cli(object):
