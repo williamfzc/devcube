@@ -4,7 +4,9 @@ last step to use docker in local development
 
 ## goal
 
-This repo aims at providing virtual env, which is same as the remote one, for your local desktop with docker. 
+![Untitled.gif](https://i.loli.net/2020/08/05/jsD23rcybRxgIXP.gif)
+
+This repo aims at providing virtual env, which is same as the remote one, for your local desktop with docker, with less cost.
 
 Based on it, developers can use the same env as their CI system used, and pay much less patient on env issues.
 
