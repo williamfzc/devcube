@@ -2,15 +2,42 @@
 
 last step to use docker in local development
 
-## goal
+## what is it
+
+Quickly create a virtual env and check in.
 
 ![Untitled.gif](https://i.loli.net/2020/08/05/jsD23rcybRxgIXP.gif)
 
-This repo aims at providing virtual env, which is same as the remote one, for your local desktop with docker, with less cost.
+All you need is a very simple config file:
 
-Based on it, developers can use the same env as their CI system used, and pay much less patient on env issues.
+```json
+{
+    "env": {
+        "name": "hello",
+        "image": "maven:slim"
+    }
+}
+```
 
-Yes, of course developers can use docker directly to sync/build their env, but it is still not a convenient enough way to achieve this.
+and enjoy same env everywhere. You can replace `maven` with custom image.
+
+## goal
+
+I got tired of env issues in co-development. At the most of time we dev from different kinds of platforms (linux/mac/windows ...), which may bring some potential env risks. For example, some building scripts may have different behaves on different platforms (caused by path or something else).
+
+Thanks to docker, now we have a stable/standard/safe env for building artifacts in CI systems.
+
+Although docker has been usage very widely in cloud, in local development it is still not convenient enough. For example, users at least need to know:
+
+- what is docker
+- what is volume
+- what is container
+- what is image
+- ...
+
+after that, they still need to type some long command (easily forget) to build an image and start a container ...
+
+This repo aims at providing virtual env, which is same as the remote one in CI system, for your local desktop with docker, with less cost. Based on it, developers can use the same env as their CI system used, and pay much less patient on env issues.
 
 ## usage
 
@@ -72,6 +99,10 @@ python >= 3.6
 ```bash
 pip install devcube
 ```
+
+## contribution
+
+`devcube` now is very light-weight (easy to read and understand). You can directly read the code. PR and issues are welcome.
 
 ## license
 
